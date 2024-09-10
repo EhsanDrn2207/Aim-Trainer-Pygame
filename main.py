@@ -12,6 +12,7 @@ class Target:
     max_size = 30 # حداکثر تعداد پیکسل که هر هدف بهش میرسه
     growth_rate = 0.2 # سرعت رشد هر هدف در صفحه ی بازی
     color = "red" # رنگ اهداف در صفحه ی بازی
+    second_color = "white" # رنگ اهداف در صفحه ی بازی
 
     def __init__(self, x, y): # موقعیت مکانی و اندازه اولیه هر هدفی که ساخته می شود در اینجا تعیین می شود
         self.x = x
@@ -28,8 +29,12 @@ class Target:
         else:
             self.size -= self.growth_rate # اندازه اهداف وقتی به 30 برسند دائما کوچک تر می شوند         
 
-
-
+    def draw(self):
+        pygame.draw.circle(surface=window, color=self.color, center=(self.x, self.y), radius=self.size)
+        pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size + 0.8)
+        pygame.draw.circle(surface=window, color=self.color, center=(self.x, self.y), radius=self.size + 0.6)
+        pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size + 0.4)
+        
 def main():
     """_summary_
     create a infinity loop for showing the window
