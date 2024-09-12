@@ -1,5 +1,5 @@
 import pygame
-
+import random
 
 pygame.init()
 
@@ -7,6 +7,9 @@ width, higth = 800, 600
 window = pygame.display.set_mode(size=(width, higth)) # مشخص کردن اندازه صفحه ی بازی
 pygame.display.set_caption("Aim Trainer") # عنوان بازی بر روی صفحه ی بازی
 
+target_increament = 400 # سرعتی که اهداف ما تغییر اندازه می دهند
+target_event = pygame.USEREVENT #  custom events
+target_pading = 30
 
 class Target:
     max_size = 30 # حداکثر تعداد پیکسل که هر هدف بهش میرسه
@@ -36,15 +39,22 @@ class Target:
         pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size + 0.4)
         
 def main():
-    """_summary_
-    create a infinity loop for showing the window
-    """
-    run = True
+    targets = []
+    pygame.time.set_timer(target_event, target_increament)
+    
+    
+    run = True 
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
+            
+            if event.type == target_event:
+                x = random.randint(target_pading, width - target_pading)
+                y = random.randint(target_pading, higth - target_pading)
+                target = Target(x, y)
+                targets.append(target)
     
     pygame.quit()
     
