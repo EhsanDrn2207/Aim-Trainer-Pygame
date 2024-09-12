@@ -10,6 +10,7 @@ pygame.display.set_caption("Aim Trainer") # عنوان بازی بر روی صف
 target_increament = 400 # سرعتی که اهداف ما تغییر اندازه می دهند
 target_event = pygame.USEREVENT #  custom events
 target_pading = 30
+background_color = (0, 20, 45) # red, green, blue
 
 class Target:
     max_size = 30 # حداکثر تعداد پیکسل که هر هدف بهش میرسه
@@ -34,17 +35,29 @@ class Target:
 
     def draw(self):
         pygame.draw.circle(surface=window, color=self.color, center=(self.x, self.y), radius=self.size)
-        pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size + 0.8)
-        pygame.draw.circle(surface=window, color=self.color, center=(self.x, self.y), radius=self.size + 0.6)
-        pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size + 0.4)
+        pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size * 0.8)
+        pygame.draw.circle(surface=window, color=self.color, center=(self.x, self.y), radius=self.size * 0.6)
+        pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size * 0.4)
+
+
+def draw_targets(window, targets):
+    window.fill(background_color) # رنگ صقحه ی بازی       
+
+    for target in targets:
+        target.draw() # نمایش اهداف بر روی صقحه ی نمایش
         
+    pygame.display.update() # updates the contents of the entire display
+
 def main():
     targets = []
     pygame.time.set_timer(target_event, target_increament)
     
+    clock = pygame.time.Clock()
     
     run = True 
     while run:
+        clock.tick(60) # defind F
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -55,7 +68,12 @@ def main():
                 y = random.randint(target_pading, higth - target_pading)
                 target = Target(x, y)
                 targets.append(target)
-    
+
+        for target in targets:
+            target.update()
+
+        draw_targets(window, targets)
+        
     pygame.quit()
     
     
