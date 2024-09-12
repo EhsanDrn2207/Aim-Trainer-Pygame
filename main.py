@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 pygame.init()
 
@@ -40,6 +41,11 @@ class Target:
         pygame.draw.circle(surface=window, color=self.second_color, center=(self.x, self.y), radius=self.size * 0.4)
 
 
+    def collide(self, x, y):
+        distance = math.sqrt((self.x - x)**2  + (self.y - y)**2) # فرمول اندازه گیری فاصله بین 2 نقطه
+        return distance <= self.size 
+
+
 def draw_targets(window, targets):
     window.fill(background_color) # رنگ صقحه ی بازی       
 
@@ -49,14 +55,20 @@ def draw_targets(window, targets):
     pygame.display.update() # updates the contents of the entire display
 
 def main():
+    run = True 
     targets = []
-    pygame.time.set_timer(target_event, target_increament)
-    
     clock = pygame.time.Clock()
     
-    run = True 
+    target_pressed = 0 # تعداد اهدافی که زده شد
+    clicks = 0 # تعداد کلیک ها کاربر
+    misses = 0 # تعداد اهدافی که کاربر از دست داده
+
+    pygame.time.set_timer(target_event, target_increament)
+
     while run:
         clock.tick(60) # defind F
+        click = False
+        mouse_position = pygame.mouse.get_pos()
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -68,10 +80,22 @@ def main():
                 y = random.randint(target_pading, higth - target_pading)
                 target = Target(x, y)
                 targets.append(target)
-
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+                click += 1
+                
         for target in targets:
             target.update()
-
+            
+            if target.size <= 0:
+                targets.remove(target)
+                misses += 1
+                
+            if click and target.collide(*mouse_position): # mouse position[0], mouse position[1]
+                targets.remove(target)
+                target_pressed += 1
+                
         draw_targets(window, targets)
         
     pygame.quit()
