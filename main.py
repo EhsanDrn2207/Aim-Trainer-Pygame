@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import time
 
 pygame.init()
 
@@ -11,7 +12,12 @@ pygame.display.set_caption("Aim Trainer") # عنوان بازی بر روی صف
 target_increament = 400 # سرعتی که اهداف ما تغییر اندازه می دهند
 target_event = pygame.USEREVENT #  custom events
 target_pading = 30
+
 background_color = (0, 20, 45) # red, green, blue
+lives = 5
+top_bar_heigth = 50
+
+label_font = pygame.font.SysFont("comicsans", 26)
 
 class Target:
     max_size = 30 # حداکثر تعداد پیکسل که هر هدف بهش میرسه
@@ -51,8 +57,22 @@ def draw_targets(window, targets):
 
     for target in targets:
         target.draw() # نمایش اهداف بر روی صقحه ی نمایش
-        
-    pygame.display.update() # updates the contents of the entire display
+
+
+def time_format(secs):
+    milli = math.floor(int(secs * 1000 % 1000) / 100)
+    seconds = int(round(secs % 60, 1))
+    minutes = int(secs // 60)
+
+    return f"{minutes:02d}:{seconds:02d}.{milli}"
+
+     
+def draw_top_bar(window, elapsed_time, targets_pressed, misses):
+    pygame.draw.rect(window, "grey", (0, 0, width, top_bar_heigth))
+    time_label = label_font.render(
+        f"Time: {time_format(elapsed_time)}", 1, "black")
+    
+    window.blit(time_label, (5, 5))
 
 def main():
     run = True 
@@ -62,6 +82,7 @@ def main():
     target_pressed = 0 # تعداد اهدافی که زده شد
     clicks = 0 # تعداد کلیک ها کاربر
     misses = 0 # تعداد اهدافی که کاربر از دست داده
+    start_time = time.time()
 
     pygame.time.set_timer(target_event, target_increament)
 
@@ -69,6 +90,7 @@ def main():
         clock.tick(60) # defind F
         click = False
         mouse_position = pygame.mouse.get_pos()
+        elapsed_time = time.time() - start_time
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -95,11 +117,17 @@ def main():
             if click and target.collide(*mouse_position): # mouse position[0], mouse position[1]
                 targets.remove(target)
                 target_pressed += 1
-                
+        if misses >= lives:
+            pass
+        
+        
         draw_targets(window, targets)
+        draw_top_bar(window, elapsed_time, target_pressed, misses)         
+        pygame.display.update() # updates the contents of the entire display
         
     pygame.quit()
     
     
 if __name__ == "__main__":
     main()
+    
