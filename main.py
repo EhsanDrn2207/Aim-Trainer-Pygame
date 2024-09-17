@@ -72,7 +72,17 @@ def draw_top_bar(window, elapsed_time, targets_pressed, misses):
     time_label = label_font.render(
         f"Time: {time_format(elapsed_time)}", 1, "black")
     
+    speed = round(targets_pressed / elapsed_time, 1)
+    speed_label = label_font.render(f"Speed: {speed} t/s", 1, "black")
+
+    hits_label = label_font.render(f"Hits: {targets_pressed}", 1, "black")
+
+    lives_label = label_font.render(f"Lives: {lives - misses}", 1, "black")
+
     window.blit(time_label, (5, 5))
+    window.blit(speed_label, (200, 5))
+    window.blit(hits_label, (450, 5))
+    window.blit(lives_label, (650, 5))
 
 def main():
     run = True 
@@ -99,7 +109,7 @@ def main():
             
             if event.type == target_event:
                 x = random.randint(target_pading, width - target_pading)
-                y = random.randint(target_pading, higth - target_pading)
+                y = random.randint(target_pading + target_pading, higth - target_pading)
                 target = Target(x, y)
                 targets.append(target)
             
