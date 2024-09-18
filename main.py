@@ -83,13 +83,47 @@ def draw_top_bar(window, elapsed_time, targets_pressed, misses):
     window.blit(speed_label, (200, 5))
     window.blit(hits_label, (450, 5))
     window.blit(lives_label, (650, 5))
+    
+def get_middle_screen(surface):
+    return width / 2 - surface.get_width() / 2
+
+def end_screen(window, elapsed_time, target_pressed, clicks):
+    window.fill(background_color)
+
+    time_label = label_font.render(
+        f"Time: {time_format(elapsed_time)}", 1, "white")
+    
+    speed = round(target_pressed / elapsed_time, 1)
+    speed_label = label_font.render(f"Speed: {speed} t/s", 1, "white")
+
+    hits_label = label_font.render(f"Hits: {target_pressed}", 1, "white")
+
+    try:
+        accuracy = round((target_pressed / clicks) * 100, 1)
+    except ZeroDivisionError:
+        accuracy = 0
+        
+    accuracy_label = label_font.render(f"Accuracy: {accuracy}%", 1, "white")
+    
+    window.blit(time_label, (get_middle_screen(time_label), 100))
+    window.blit(speed_label, (get_middle_screen(speed_label), 200))
+    window.blit(hits_label, (get_middle_screen(hits_label), 300))
+    window.blit(accuracy_label, (get_middle_screen(accuracy_label), 400))
+    
+    pygame.display.update()
+
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+                quit()
 
 def main():
     run = True 
     targets = []
     clock = pygame.time.Clock()
     
-    target_pressed = 0 # تعداد اهدافی که زده شد
+    targets_pressed = 0 # تعداد اهدافی که زده شد
     clicks = 0 # تعداد کلیک ها کاربر
     misses = 0 # تعداد اهدافی که کاربر از دست داده
     start_time = time.time()
@@ -115,7 +149,7 @@ def main():
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 click = True
-                click += 1
+                clicks += 1
                 
         for target in targets:
             target.update()
@@ -126,13 +160,13 @@ def main():
                 
             if click and target.collide(*mouse_position): # mouse position[0], mouse position[1]
                 targets.remove(target)
-                target_pressed += 1
+                targets_pressed += 1
         if misses >= lives:
-            pass
+            end_screen(window, elapsed_time, targets_pressed, clicks)
         
         
         draw_targets(window, targets)
-        draw_top_bar(window, elapsed_time, target_pressed, misses)         
+        draw_top_bar(window, elapsed_time, targets_pressed, misses)         
         pygame.display.update() # updates the contents of the entire display
         
     pygame.quit()
